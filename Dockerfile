@@ -1,15 +1,27 @@
 #######################################
 # image for dev build environment
 ######################################
-FROM alpine:3.15.0 as DEV
+FROM golang:1.16.12-alpine as DEV
+
+ARG USERNAME=dev
+ARG USER_UID=1000
+ARG USER_GID=1000
+
+# Create the user
+RUN addgroup -S -g $USER_GID $USERNAME \
+    && adduser -S -D -u $USER_UID -G $USERNAME $USERNAME
+
 # install packages
 RUN apk add --update --no-cache bash make git zsh curl tmux
 
 # Make zsh your default shell for tmux
-RUN echo "set-option -g default-shell /bin/zsh" >> /root/.tmux.conf
+RUN echo "set-option -g default-shell /bin/zsh" >> /home/$USERNAME/.tmux.conf
+
+USER $USER
 
 # install oh-my-zsh
-RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+RUN ZSH="/home/$USERNAME/.oh-my-zsh" sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" \
+    && cp /root/.zshrc /home/$USERNAME/.zshrc
 
 WORKDIR /app
 
