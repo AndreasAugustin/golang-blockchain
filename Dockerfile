@@ -1,7 +1,7 @@
 #######################################
 # image for dev build environment
 ######################################
-FROM golang:1.16.12-alpine as DEV
+FROM golang:1.18.2-alpine as DEV
 
 ARG USERNAME=dev
 ARG USER_UID=1000
